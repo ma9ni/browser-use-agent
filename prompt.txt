@@ -1,0 +1,13 @@
+Va sur le site https://www.free-work.com/fr/tech-it.
+1. Si un bandeau de cookies apparaît, accepte-le ou ferme-le.
+2. Dans la barre de recherche, cherche les missions freelance avec le mot-clé "DevOps" ou "SRE".
+3. Filtre la localisation sur "Île-de-France" ou "Paris".
+4. Filtre les missions freelance avec un TJM minimum de 550 €/jour.
+5. Analyse les résultats et sélectionne les 3 meilleures missions freelance disponibles.
+6. Pour chacune des 3 missions, donne-moi :
+   - L'intitulé exact du poste
+   - Le TJM indiqué (ou la fourchette)
+   - La localisation précise et la politique de télétravail (remote partiel / complet)
+   - La durée estimée de la mission et la date de démarrage
+   - Les compétences clés / technologies demandées (ex: Kubernetes, Terraform, AWS/GCP, CI/CD...)
+   - Le lien direct (URL) vers l'annonce
