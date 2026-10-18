@@ -2,5 +2,5 @@ browser-use>=0.13.0
 playwright>=1.40.0
 python-dotenv>=1.0.0
 openai>=1.50.0
-google-genai>=1.0.0
-pydantic>=2.0.0
+google-genai>=2.31.0
+pydantic>=2.14.1
