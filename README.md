@@ -41,7 +41,7 @@ L'agent est capable d'analyser le DOM, de cliquer, de remplir des formulaires, d
 
 ### 1. Cloner le projet
 ```bash
-git clone https://github.com/<votre-user>/browser-use-agent.git
+git clone https://github.com/ma9ni/browser-use-agent.git
 cd browser-use-agent
 ```
 
@@ -117,7 +117,7 @@ Sur une VM Ubuntu / Debian (sans écran connecté) :
 
 ### 1. Installation en une commande
 ```bash
-git clone https://github.com/<votre-user>/browser-use-agent.git
+git clone https://github.com/ma9ni/browser-use-agent.git
 cd browser-use-agent
 chmod +x setup.sh
 ./setup.sh
