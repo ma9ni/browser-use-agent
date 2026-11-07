@@ -46,3 +46,5 @@ results.md
 browseruse_agent_data/
 tmp/
 .DS_Store
+tls_user_profile/
+screenshots/

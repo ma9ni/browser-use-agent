@@ -4,3 +4,5 @@ python-dotenv>=1.0.0
 openai>=1.50.0
 google-genai>=2.31.0
 pydantic>=2.14.1
+requests
+playwright-stealth>=2.0.0
