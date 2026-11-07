@@ -1,0 +1,43 @@
+Garde tes réflexions très courtes et directes à chaque étape pour maximiser la vitesse d'exécution.
+
+Suis scrupuleusement ce parcours optimisé :
+
+1. Accède DIRECTEMENT à la page du centre TLScontact de Tunis :
+   URL : https://visas-fr.tlscontact.com/fr-fr/country/tn/vac/tnTUN2fr
+   - Si une vérification Cloudflare apparaît ("Vérification de sécurité..."), attends simplement 5 à 10 secondes qu'elle se valide automatiquement.
+   - Si une bannière de cookies apparaît, accepte-la ou ferme-la.
+   - Clique sur le bouton "Prendre rendez-vous".
+
+2. Sur la fenêtre modale des questions :
+   - Réponds "Oui" à "Avez-vous rempli une demande France-Visas ?".
+   - Réponds "Oui" à "Êtes-vous inscrit sur TLScontact ?".
+   - Clique sur "SE CONNECTER" (enchaîne ces actions en une seule étape).
+
+3. Sur la page d'authentification (i2-auth.visas-fr.tlscontact.com) :
+   - Remplis le champ email avec <secret>tls_email</secret>.
+   - Remplis le champ mot de passe avec <secret>tls_password</secret>.
+   - Coche la case reCAPTCHA ("Je ne suis pas un robot"). Si un challenge d'images apparaît, attends la validation par l'utilisateur.
+   - Clique sur "Se connecter".
+
+4. Sur la page du groupe de voyage (/fr-fr/travel-groups) :
+   - Clique directement sur le bouton "Sélectionner" en face de la demande existante (dossier Latifa NABLI - groupe 29310587).
+   - Attends la fin du chargement vers la page suivante.
+
+5. Sur la page des services additionnels :
+   - Clique directement sur le bouton "Continuer" (bouton 'book-appointment-btn' en bas) sans cocher aucune option payante.
+
+6. Sur le calendrier de rendez-vous (/workflow/appointment-booking/tnTUN2fr/29310587) :
+   - Attends que le widget de calendrier soit bien chargé.
+   - Inspecte le calendrier (mois affichés et mois suivants via le bouton '>' ou flèche droite).
+   - ⚡ ACTION CRITIQUE - NOTIFICATION WHATSAPP IMMÉDIATE (STEP PRIORITAIRE) :
+     Dès que tu détectes au moins un créneau disponible ouvert, N'ATTENDS PAS LA FIN DU PROCESSUS.
+     Déclenche IMMÉDIATEMENT l'action `notify_whatsapp` avec un message d'alerte explicite :
+     Exemple : notify_whatsapp(message="🚨 CRÉNEAU DISPONIBLE TLScontact Tunis ! Date : [date et heure]. Lien : https://visas-fr.tlscontact.com/workflow/appointment-booking/tnTUN2fr/29310587")
+     Cette notification fait partie intégrante des étapes et doit être exécutée à l'instant même où un créneau est visible !
+   - Si et seulement si aucun créneau n'est disponible sur tous les mois vérifiés, ne déclenche pas notify_whatsapp.
+   - Termine ensuite par la commande 'done' avec une synthèse claire :
+     * STATUT GLOBAL : [CRÉNEAUX DISPONIBLES ou AUCUN CRÉNEAU DISPONIBLE]
+     * Notification WhatsApp envoyée : [OUI / NON]
+     * Créneaux trouvés : liste exacte des dates et heures disponibles (ou "Aucun")
+     * Mois vérifiés : liste des mois consultés
+     * URL finale : https://visas-fr.tlscontact.com/workflow/appointment-booking/tnTUN2fr/29310587

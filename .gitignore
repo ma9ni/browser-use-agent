@@ -34,7 +34,8 @@ env.bak/
 venv.bak/
 
 # IDE
-.idea/
+.idea/*
+!.idea/runConfigurations/
 .vscode/
 *.swp
 *.swo
