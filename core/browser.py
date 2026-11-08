@@ -6,6 +6,7 @@ profil persistant, et gestion propre de l'arrière-plan sous Linux (Workspaces /
 
 import asyncio
 import os
+import shutil
 import subprocess
 from pathlib import Path
 from urllib.parse import urlparse
@@ -61,11 +62,15 @@ class BrowserManager:
         if is_headless:
             extra_args.extend(["--headless=new", "--disable-gpu"])
 
+        # Priorité à Google Chrome officiel pour contourner la détection Cloudflare
+        chrome_bin = shutil.which("google-chrome") or shutil.which("google-chrome-stable")
+
         bp = BrowserProfile(
             headless=is_headless,
             user_data_dir=str(self.user_data_dir),
             args=extra_args,
             proxy=proxy_settings,
+            executable_path=chrome_bin,
         )
         self.browser_session = Browser(browser_profile=bp)
         await self.browser_session.start()
