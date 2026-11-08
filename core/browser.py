@@ -25,13 +25,18 @@ class BrowserManager:
 
     async def start(self) -> tuple[BrowserContext, Page]:
         """Démarre Chrome anti-détection et connecte Playwright via CDP."""
-        extra_args = []
-        if self.headless:
-            # En mode arrière-plan, éviter le flag --headless standard qui est bloqué par Cloudflare
-            # On laisse le rendu GPU complet actif
-            pass
+        extra_args = [
+            "--no-sandbox",
+            "--disable-dev-shm-usage",
+            "--disable-blink-features=AutomationControlled",
+        ]
 
-        bp = BrowserProfile(headless=False, user_data_dir=str(self.user_data_dir), args=extra_args)
+        # Détection automatique de l'environnement headless (mode demandé ou absence de DISPLAY)
+        is_headless = self.headless or not os.getenv("DISPLAY")
+        if is_headless:
+            extra_args.extend(["--headless=new", "--disable-gpu"])
+
+        bp = BrowserProfile(headless=is_headless, user_data_dir=str(self.user_data_dir), args=extra_args)
         self.browser_session = Browser(browser_profile=bp)
         await self.browser_session.start()
 
