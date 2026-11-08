@@ -8,7 +8,9 @@ import asyncio
 import os
 import subprocess
 from pathlib import Path
+from urllib.parse import urlparse
 from browser_use import Browser, BrowserProfile
+from browser_use.browser.profile import ProxySettings
 from playwright.async_api import async_playwright, BrowserContext, Page
 
 
@@ -40,17 +42,31 @@ class BrowserManager:
             "--disable-blink-features=AutomationControlled",
         ]
 
-        # Support proxy (résidentiel / mobile) via variable d'environnement pour contourner les bans d'ASN datacenter
+        # Support proxy (résidentiel / mobile) via ProxySettings natif de browser-use
+        proxy_settings = None
         proxy_server = os.getenv("PROXY_SERVER")
         if proxy_server:
-            extra_args.append(f"--proxy-server={proxy_server}")
+            parsed = urlparse(proxy_server)
+            if parsed.username and parsed.password:
+                proxy_settings = ProxySettings(
+                    server=f"{parsed.scheme}://{parsed.hostname}:{parsed.port}",
+                    username=parsed.username,
+                    password=parsed.password,
+                )
+            else:
+                proxy_settings = ProxySettings(server=proxy_server)
 
         # Détection automatique de l'environnement headless (mode demandé ou absence de DISPLAY)
         is_headless = self.headless or not os.getenv("DISPLAY")
         if is_headless:
             extra_args.extend(["--headless=new", "--disable-gpu"])
 
-        bp = BrowserProfile(headless=is_headless, user_data_dir=str(self.user_data_dir), args=extra_args)
+        bp = BrowserProfile(
+            headless=is_headless,
+            user_data_dir=str(self.user_data_dir),
+            args=extra_args,
+            proxy=proxy_settings,
+        )
         self.browser_session = Browser(browser_profile=bp)
         await self.browser_session.start()
 
