@@ -1,0 +1,13 @@
+.git
+.gitignore
+.venv
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+.idea
+.vscode
+.env
+screenshots/
+tls_user_profile/
+*.log
