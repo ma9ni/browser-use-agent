@@ -25,11 +25,25 @@ class BrowserManager:
 
     async def start(self) -> tuple[BrowserContext, Page]:
         """Démarre Chrome anti-détection et connecte Playwright via CDP."""
+        # Nettoyage des verrous résiduels Chromium pour éviter les blocages après redémarrage ou plantage
+        for lock_name in ("SingletonLock", "SingletonCookie", "SingletonSocket"):
+            lock_path = self.user_data_dir / lock_name
+            if lock_path.is_symlink() or lock_path.exists():
+                try:
+                    lock_path.unlink(missing_ok=True)
+                except Exception:
+                    pass
+
         extra_args = [
             "--no-sandbox",
             "--disable-dev-shm-usage",
             "--disable-blink-features=AutomationControlled",
         ]
+
+        # Support proxy (résidentiel / mobile) via variable d'environnement pour contourner les bans d'ASN datacenter
+        proxy_server = os.getenv("PROXY_SERVER")
+        if proxy_server:
+            extra_args.append(f"--proxy-server={proxy_server}")
 
         # Détection automatique de l'environnement headless (mode demandé ou absence de DISPLAY)
         is_headless = self.headless or not os.getenv("DISPLAY")
