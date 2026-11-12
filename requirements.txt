@@ -3,3 +3,6 @@ playwright>=1.40.0
 python-dotenv>=1.0.0
 requests
 playwright-stealth>=2.0.0
+recognizer==1.4
+transformers>=4.48,<5
+opencv-python>=4.10,<5

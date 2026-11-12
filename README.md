@@ -76,10 +76,12 @@ Idéal pour surveiller en continu l'ouverture de créneaux de rendez-vous TLScon
 
 ### Caractéristiques :
 - **0$ de coût** : Zéro appel API payant.
-- **Ultra-rapide** : Exécution complète en ~15 à 20 secondes.
-- **Anti-Cloudflare natif** : Contourne Turnstile et les bannières cookies.
+- **Ultra-rapide hors CAPTCHA** : Exécution complète en ~15 à 20 secondes.
+- **Diagnostic Cloudflare** : Attend jusqu'à 30 secondes qu'une vérification transitoire se termine, puis signale un blocage persistant.
 - **Arrière-plan sans perturbation** : En mode `--headless`, la fenêtre tourne sur le bureau virtuel 4 sous Linux (zéro fenêtre sur votre écran de travail).
 - **Alerte WhatsApp immédiate** : Dès qu'un créneau est visible, message WhatsApp envoyé avec le lien direct de réservation.
+
+Si la connexion affiche un reCAPTCHA, reCognizer tente de valider la case ou le puzzle d'images dans la session Playwright existante. Les libellés français des catégories prises en charge sont traduits pour le solveur. Installer les dépendances avec `pip install -r requirements.txt` avant de lancer le watcher. Les modèles de reconnaissance sont téléchargés au premier usage et tournent localement ; Hugging Face utilise `.model-cache/` et YOLO place son fichier de poids dans le dossier du projet. Aucune clé OpenRouter n'est nécessaire pour ce parcours. Un puzzle refusé est signalé comme `RECAPTCHA_SOLVE_FAILED` et ne compte pas comme une vérification réussie du calendrier. Un refus d'accès Cloudflare avant la connexion est signalé séparément comme `CLOUDFLARE_BLOCK` : le solveur reCAPTCHA ne peut pas agir sur cette page.
 
 ### Ligne de commande :
 
@@ -141,21 +143,73 @@ python notify.py "Ceci est un test"
 
 ## 🌐 5. Déploiement 24/7 sur une VM Linux (Sans écran)
 
-Pour laisser tourner la surveillance sur un VPS / serveur distant sans écran physique :
+Pour laisser tourner la surveillance sur un VPS / serveur distant (Ubuntu/Debian) sans écran physique :
 
-1. **Installer Xvfb & Chrome sur la VM** :
+### Option A — Installation directe sur la VM (avec `.venv`)
+
+1. **Installer Python, Xvfb & Google Chrome sur la VM** :
    ```bash
-   sudo apt update && sudo apt install -y xvfb
+   sudo apt update && sudo apt install -y python3 python3-venv python3-pip xvfb wget curl
    wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
    sudo dpkg -i google-chrome-stable_current_amd64.deb || sudo apt -f install -y
+   rm -f google-chrome-stable_current_amd64.deb
    ```
 
-2. **Copier votre projet (avec le profil déjà authentifié)** :
+2. **Transférer le projet depuis votre PC vers la VM (sans copier le `.venv` local)** :
+   > ⚠️ Ne copiez jamais le dossier `.venv` d'une machine à une autre (les chemins absolus Python y sont codés en dur). Utilisez `rsync` pour copier le code, votre `.env` et le profil navigateur `tls_user_profile/` :
    ```bash
-   scp -r /home/ahmed/IdeaProjects/browser-use-demo user@ip-vm:~/browser-use-demo
+   rsync -avz --exclude '.venv' --exclude '__pycache__' --exclude '.git' \
+     /home/ahmed/IdeaProjects/browser-use-demo/ user@ip-vm:~/browser-use-demo/
    ```
 
-3. **Lancer la surveillance en continu** :
+3. **Créer l'environnement virtuel `.venv` et installer toutes les librairies sur la VM** :
    ```bash
-   nohup xvfb-run -a python main.py tls --interval 15 --heartbeat 24 > monitor.log 2>&1 &
+   cd ~/browser-use-demo
+   python3 -m venv .venv
+   source .venv/bin/activate
+   pip install --upgrade pip
+   pip install -r requirements.txt
+   playwright install chromium
+   sudo .venv/bin/playwright install-deps chromium
    ```
+   *(Alternative rapide : vous pouvez aussi lancer directement `./setup.sh` qui automatise ces étapes).*
+
+4. **Vérifier le fichier `.env`** :
+   ```bash
+   nano .env
+   # Vérifiez que TLS_EMAIL, TLS_PASSWORD, WHATSAPP_PHONE et WHATSAPP_API_KEY sont bien renseignés
+   ```
+
+5. **Tester que tout fonctionne (notification + 1 passage test)** :
+   ```bash
+   xvfb-run -a .venv/bin/python main.py test-notify
+   xvfb-run -a -s "-screen 0 1920x1080x24" .venv/bin/python main.py tls
+   ```
+
+6. **Lancer la surveillance 24/7 en tâche de fond** :
+   ```bash
+   cd ~/browser-use-demo
+   nohup xvfb-run -a -s "-screen 0 1920x1080x24" .venv/bin/python main.py tls --interval 15 --heartbeat 24 > agent.log 2>&1 &
+   ```
+   * **Suivre les logs en direct** : `tail -f ~/browser-use-demo/agent.log`
+   * **Vérifier si le processus tourne** : `ps aux | grep "main.py tls"`
+   * **Arrêter la surveillance** : `pkill -f "main.py tls"`
+
+---
+
+### Option B — Déploiement via Docker (Tout-en-un)
+
+Le projet contient déjà un [`Dockerfile`](file:///home/ahmed/IdeaProjects/browser-use-demo/Dockerfile) incluant Python, Playwright, Google Chrome et Xvfb :
+
+```bash
+cd ~/browser-use-demo
+docker build -t tls-watcher .
+docker run -d --name tls-watcher \
+  --restart unless-stopped \
+  --env-file .env \
+  -v $(pwd)/tls_user_profile:/app/tls_user_profile \
+  -v $(pwd)/screenshots:/app/screenshots \
+  tls-watcher
+```
+* **Suivre les logs Docker** : `docker logs -f tls-watcher`
+* **Arrêter le conteneur** : `docker stop tls-watcher`

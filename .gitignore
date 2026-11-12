@@ -49,3 +49,5 @@ tmp/
 .DS_Store
 tls_user_profile/
 screenshots/
+.model-cache/
+yolov8m-seg.pt

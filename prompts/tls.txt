@@ -20,7 +20,12 @@ Suis scrupuleusement ce parcours optimisé :
    - Clique sur "Se connecter".
 
 4. Sur la page du groupe de voyage (/fr-fr/travel-groups) :
-   - Clique directement sur le bouton "Sélectionner" en face de la demande existante (dossier Latifa NABLI - groupe 29310587).
+   - ⚠️ VÉRIFICATION CRITIQUE D'ABSENCE DE DOSSIER :
+     Si la page affiche "Aucune demande créée" ou si aucun dossier/bouton "Sélectionner" n'est présent :
+     Déclenche IMMÉDIATEMENT l'action `notify_whatsapp` avec :
+     notify_whatsapp(message="🚨 ALERTE CRITIQUE TLScontact : Aucune demande créée sur le compte ! Le dossier a été retiré ou supprimé.")
+     Puis termine immédiatement par la commande 'done' en signalant l'absence du dossier.
+   - Sinon, clique directement sur le bouton "Sélectionner" en face de la demande existante.
    - Attends la fin du chargement vers la page suivante.
 
 5. Sur la page des services additionnels :
